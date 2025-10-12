@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Destinations from './pages/Destinations';
+import Itinerary from './pages/Itinerary';
+import Navbar from './components/Navbar';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [itinerary, setItinerary] = useState([]);
+
+  const addToItinerary = (item) => {
+    setItinerary(prev => [...prev, { ...item, id: Date.now() }]);
+  };
+
+  const removeFromItinerary = (id) => {
+    setItinerary(prev => prev.filter(item => item.id !== id));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route 
+            path="/destinations" 
+            element={
+              <Destinations 
+                onAddToItinerary={addToItinerary}
+              />
+            } 
+          />
+          <Route 
+            path="/itinerary" 
+            element={
+              <Itinerary 
+                itinerary={itinerary}
+                onRemoveItem={removeFromItinerary}
+              />
+            } 
+          />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
