@@ -1,7 +1,9 @@
 // src/services/amadeusAPI.js
+import { AMADEUS_CONFIG, SEARCH_PARAMS } from '../utils/constants';
+
 class AmadeusAPI {
   constructor() {
-    this.baseUrl = 'https://test.api.amadeus.com/v1';
+    this.baseUrl = AMADEUS_CONFIG.BASE_URL;
     this.token = null;
   }
 
@@ -10,13 +12,24 @@ class AmadeusAPI {
       return this.token;
     }
 
+    const apiKey = import.meta.env.VITE_AMADEUS_API_KEY;
+    const apiSecret = import.meta.env.VITE_AMADEUS_API_SECRET;
+    
+    if (!apiKey || !apiSecret) {
+      throw new Error('Amadeus API credentials not configured. Please update .env file.');
+    }
+
     const response = await fetch(`${this.baseUrl}/security/oauth2/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: `grant_type=client_credentials&client_id=${import.meta.env.VITE_AMADEUS_API_KEY}&client_secret=${import.meta.env.VITE_AMADEUS_API_SECRET}`
+      body: `grant_type=client_credentials&client_id=${apiKey}&client_secret=${apiSecret}`
     });
+
+    if (!response.ok) {
+      throw new Error(`Authentication failed: ${response.status} ${response.statusText}`);
+    }
 
     const data = await response.json();
     this.token = data.access_token;
@@ -46,31 +59,43 @@ class AmadeusAPI {
     return response.json();
   }
 
-  // Search destinations in East Africa
   async searchDestinations(keyword) {
-    const eastAfricaCountries = ['KE', 'TZ', 'UG', 'RW', 'BI', 'ET', 'SS', 'DJ', 'ER', 'SO'];
-    const countryParams = eastAfricaCountries.map(country => `countryCode=${country}`).join('&');
-    
-    return this.makeRequest('/reference-data/locations', {
+    return await this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.LOCATIONS, {
       keyword,
       subType: 'CITY',
-      ...Object.fromEntries(eastAfricaCountries.map(country => ['countryCode', country]))
+      'page[limit]': SEARCH_PARAMS.DEFAULT_LIMIT
+    });
+  }
+
+  async getPointsOfInterest(latitude, longitude) {
+    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.POINTS_OF_INTEREST, {
+      latitude,
+      longitude,
+      radius: SEARCH_PARAMS.DEFAULT_RADIUS
+    });
+  }
+
+  async getActivities(latitude, longitude) {
+    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.ACTIVITIES, {
+      latitude,
+      longitude,
+      radius: SEARCH_PARAMS.DEFAULT_RADIUS
     });
   }
 
   async getFlightOffers(origin, destination, departureDate, adults = 1) {
-    return this.makeRequest('/shopping/flight-offers', {
+    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.FLIGHT_OFFERS, {
       originLocationCode: origin,
       destinationLocationCode: destination,
       departureDate,
       adults,
-      currencyCode: 'USD',
+      currencyCode: SEARCH_PARAMS.DEFAULT_CURRENCY,
       max: 10
     });
   }
 
   async getHotelOffers(cityCode) {
-    return this.makeRequest('/reference-data/locations/hotels/by-city', {
+    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.HOTELS, {
       cityCode
     });
   }
