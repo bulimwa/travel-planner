@@ -1,3 +1,264 @@
+/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Styles for East Africa Travel Planner */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn-primary {
+    @apply bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary-600 border border-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-primary-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  /* Card Components */
+  .card {
+    @apply bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100;
+  }
+  
+  .card-hover {
+    @apply card hover:transform hover:-translate-y-1;
+  }
+  
+  /* Input Components */
+  .input-primary {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  /* Badge Components */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+  
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+  
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+  
+  /* Section Styles */
+  .section-padding {
+    @apply py-12 lg:py-20;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent;
+  }
+  
+  /* Loading Spinner */
+  .spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600;
+  }
+}
+
+@layer utilities {
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent;
+  }
+  
+  /* Background Gradients */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-blue-600;
+  }
+  
+  .bg-gradient-secondary {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600;
+  }
+  
+  /* Animations */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+  
+  /* Custom Shadows */
+  .shadow-custom {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-gentle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse-gentle {
+  animation: pulse-gentle 2s infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-600;
+}
+
+/* Print Styles for Itinerary */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-after: always;
+  }
+}
+
+/* Map Container Styles */
+.map-container {
+  @apply rounded-xl overflow-hidden shadow-lg;
+}
+
+/* Weather Widget Styles */
+.weather-widget {
+  @apply bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg;
+}
+
+/* Itinerary Timeline Styles */
+.timeline-item {
+  @apply relative border-l-2 border-primary-500 pl-6 pb-6;
+}
+
+.timeline-item:last-child {
+  @apply pb-0;
+}
+
+.timeline-dot {
+  @apply absolute w-4 h-4 bg-primary-500 rounded-full -left-2 top-1;
+}
+
+/* Destination Gallery Styles */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+}
+
+/* Focus Styles for Accessibility */
+.focus-ring:focus {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .dark-auto {
+    @apply bg-gray-900 text-white;
+  }
+}
+
+/* Custom utility for East Africa theme */
+.safari-theme {
+  background: linear-gradient(135deg, #f59e0b, #d97706, #f97316);
+}
+
+/* Error and Success States */
+.error-message {
+  @apply bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg;
+}
+
+.success-message {
+  @apply bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg;
+}
+
+.warning-message {
+  @apply bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg;
+}
+
+/* Loading Skeleton */
+.skeleton {
+  @apply bg-gray-200 animate-pulse rounded;
+}
+
+.skeleton-text {
+  @apply skeleton h-4 rounded;
+}
+
+/* Mobile Navigation */
+.mobile-nav-open {
+  transform: translateX(0);
+}
+
+.mobile-nav-closed {
+  transform: translateX(-100%);
+}
+
+/* Custom transitions */
+.transition-slow {
+  transition: all 0.5s ease-in-out;
+}
+
+.transition-fast {
+  transition: all 0.2s ease-in-out;
+}
