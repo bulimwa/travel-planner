@@ -1,9 +1,7 @@
 // src/services/amadeusAPI.js
-import { AMADEUS_CONFIG, SEARCH_PARAMS } from '../utils/constants';
-
 class AmadeusAPI {
   constructor() {
-    this.baseUrl = AMADEUS_CONFIG.BASE_URL;
+    this.baseUrl = 'https://test.api.amadeus.com/v1';
     this.token = null;
   }
 
@@ -15,7 +13,7 @@ class AmadeusAPI {
     const apiKey = import.meta.env.VITE_AMADEUS_API_KEY;
     const apiSecret = import.meta.env.VITE_AMADEUS_API_SECRET;
     
-    if (!apiKey || !apiSecret) {
+    if (!apiKey || !apiSecret || apiKey === 'G48k8bubPXvpFWTIYxV6g67GG9xP9C0b') {
       throw new Error('Amadeus API credentials not configured. Please update .env file.');
     }
 
@@ -60,42 +58,83 @@ class AmadeusAPI {
   }
 
   async searchDestinations(keyword) {
-    return await this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.LOCATIONS, {
-      keyword,
-      subType: 'CITY',
-      'page[limit]': SEARCH_PARAMS.DEFAULT_LIMIT
-    });
+    try {
+      return await this.makeRequest('/reference-data/locations', {
+        keyword,
+        subType: 'CITY',
+        'page[limit]': 10
+      });
+    } catch (error) {
+      // Fallback to mock data if API fails
+      return this.getMockDestinations(keyword);
+    }
+  }
+
+  getMockDestinations(keyword) {
+    const mockData = {
+      data: [
+        {
+          id: '1',
+          name: 'Nairobi',
+          iataCode: 'NBO',
+          address: { countryName: 'Kenya', countryCode: 'KE' },
+          geoCode: { latitude: -1.2921, longitude: 36.8219 }
+        },
+        {
+          id: '2', 
+          name: 'Dar es Salaam',
+          iataCode: 'DAR',
+          address: { countryName: 'Tanzania', countryCode: 'TZ' },
+          geoCode: { latitude: -6.7924, longitude: 39.2083 }
+        },
+        {
+          id: '3',
+          name: 'Kampala', 
+          iataCode: 'KLA',
+          address: { countryName: 'Uganda', countryCode: 'UG' },
+          geoCode: { latitude: 0.3476, longitude: 32.5825 }
+        }
+      ]
+    };
+    
+    if (keyword) {
+      mockData.data = mockData.data.filter(dest => 
+        dest.name.toLowerCase().includes(keyword.toLowerCase())
+      );
+    }
+    
+    return mockData;
   }
 
   async getPointsOfInterest(latitude, longitude) {
-    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.POINTS_OF_INTEREST, {
+    return this.makeRequest('/reference-data/locations/pois', {
       latitude,
       longitude,
-      radius: SEARCH_PARAMS.DEFAULT_RADIUS
+      radius: 20
     });
   }
 
   async getActivities(latitude, longitude) {
-    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.ACTIVITIES, {
+    return this.makeRequest('/shopping/activities', {
       latitude,
       longitude,
-      radius: SEARCH_PARAMS.DEFAULT_RADIUS
+      radius: 20
     });
   }
 
   async getFlightOffers(origin, destination, departureDate, adults = 1) {
-    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.FLIGHT_OFFERS, {
+    return this.makeRequest('/shopping/flight-offers', {
       originLocationCode: origin,
       destinationLocationCode: destination,
       departureDate,
       adults,
-      currencyCode: SEARCH_PARAMS.DEFAULT_CURRENCY,
+      currencyCode: 'USD',
       max: 10
     });
   }
 
   async getHotelOffers(cityCode) {
-    return this.makeRequest(AMADEUS_CONFIG.ENDPOINTS.HOTELS, {
+    return this.makeRequest('/reference-data/locations/hotels/by-city', {
       cityCode
     });
   }
